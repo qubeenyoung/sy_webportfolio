@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "model:bed": "blender --background --factory-startup --python tools/blender/build_bed.py"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

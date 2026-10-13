@@ -83,7 +83,12 @@ export const DOOR = {
 // Furniture
 // ---------------------------------------------------------------------------
 
+export type BedVariant = 'model' | 'blockout'
+
 export const BED = {
+  /** 'model' = GLB built by tools/blender/build_bed.py; 'blockout' = original primitive boxes. */
+  variant: 'model' as BedVariant,
+  modelUrl: `${import.meta.env.BASE_URL}models/bed.glb`,
   placement: { position: [-0.95, 0, B + 1.05], rotationY: FACING.front } as Placement,
   width: 1.35,
   length: 2.1,
@@ -169,7 +174,7 @@ export const PROPS = {
   deskBooks: [R - 0.12, deskTop, 0.95] as Vec3,
   deskNotebook: [R - 0.35, deskTop, 0.65] as Vec3,
   penHolder: [R - 0.1, deskTop, 0.6] as Vec3,
-  phone: [-1.3, BED.mattressTop + 0.1, -1.0] as Vec3,
+  phone: [-1.3, BED.mattressTop + 0.065, -1.0] as Vec3, // rests on the duvet surface
 }
 
 /** Character placeholder — final character will be a 2D illustration placed in 3D. */

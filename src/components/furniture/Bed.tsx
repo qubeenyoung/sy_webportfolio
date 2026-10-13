@@ -1,9 +1,18 @@
-import { BED } from '../../config/room'
+import { BED, type BedVariant } from '../../config/room'
 import { Block } from '../scene/Block'
 import { Placed } from '../scene/Placed'
+import { BedModel } from './BedModel'
 
-// Local space: head at -z, foot at +z, width along x.
+// `?bed=blockout` / `?bed=model` overrides the configured variant (handy for before/after comparisons).
+const variant = (new URLSearchParams(window.location.search).get('bed') as BedVariant | null) ?? BED.variant
+
 export function Bed() {
+  return variant === 'blockout' ? <BedBlockout /> : <BedModel />
+}
+
+// Original primitive version, kept as a fallback and layout reference.
+// Local space: head at -z, foot at +z, width along x.
+export function BedBlockout() {
   const { width: w, length: l, mattressTop, headboardHeight } = BED
   const frameTop = mattressTop - 0.2
   const duvetLength = l * 0.68
