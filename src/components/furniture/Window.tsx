@@ -1,5 +1,7 @@
-import { ROOM, WINDOW, FACING } from '../../config/room'
-import { Block, Cylinder } from '../scene/Block'
+import { useGLTF } from '@react-three/drei'
+import type { Mesh } from 'three'
+import { ROOM, WINDOW, FACING, type ModelVariant } from '../../config/room'
+import { Block, Cylinder, RoleMaterial } from '../scene/Block'
 import { Placed } from '../scene/Placed'
 
 // Local space: the wall plane is z = 0, the room interior is +z, x runs along the wall.
@@ -30,6 +32,20 @@ export function Window() {
         position={[0, curtain.rodHeight, curtain.offsetFromWall]}
         rotation={[0, 0, Math.PI / 2]}
       />
+      {curtainVariant === 'blockout' ? <CurtainsBlockout /> : <CurtainModel />}
+    </Placed>
+  )
+}
+
+// `?curtain=blockout` / `?curtain=model` overrides the configured variant (handy for before/after comparisons).
+const curtainVariant =
+  (new URLSearchParams(window.location.search).get('curtain') as ModelVariant | null) ?? WINDOW.curtain.variant
+
+// Original primitive panels, kept as a fallback and layout reference.
+function CurtainsBlockout() {
+  const { curtain } = WINDOW
+  return (
+    <>
       {curtain.panelOffsets.map((x) => (
         <Block
           key={x}
@@ -39,6 +55,22 @@ export function Window() {
           radius={0.02}
         />
       ))}
-    </Placed>
+    </>
   )
 }
+
+// GLB built by tools/blender/build_curtain.py, already in this component's local frame.
+function CurtainModel() {
+  const { nodes } = useGLTF(WINDOW.curtain.modelUrl) as unknown as { nodes: Record<'curtain_a' | 'curtain_b', Mesh> }
+  return (
+    <>
+      {(['curtain_a', 'curtain_b'] as const).map((name) => (
+        <mesh key={name} name={name} geometry={nodes[name].geometry} castShadow receiveShadow>
+          <RoleMaterial role="curtain" />
+        </mesh>
+      ))}
+    </>
+  )
+}
+
+useGLTF.preload(WINDOW.curtain.modelUrl)

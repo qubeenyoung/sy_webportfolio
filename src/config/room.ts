@@ -55,6 +55,8 @@ export const CAMERA = {
 // Openings in walls
 // ---------------------------------------------------------------------------
 
+export type ModelVariant = 'model' | 'blockout'
+
 export const WINDOW = {
   /** Center of the opening along the left wall. */
   z: -1.25,
@@ -62,6 +64,9 @@ export const WINDOW = {
   sillHeight: 0.85,
   height: 1.3,
   curtain: {
+    /** 'model' = GLB built by tools/blender/build_curtain.py; 'blockout' = original boxes. */
+    variant: 'model' as ModelVariant,
+    modelUrl: `${import.meta.env.BASE_URL}models/curtain.glb`,
     rodHeight: 2.3,
     rodLength: 1.9,
     panelWidth: 0.4,
