@@ -9,7 +9,7 @@ import { Chair } from '../furniture/Chair'
 import { Rug } from '../furniture/Rug'
 import { Poster, WallFrames } from '../furniture/WallDecor'
 import { DeskBooks, DeskLamp, DeskNotebook, PenHolder, Phone, Trophy } from '../furniture/Props'
-import { CharacterPlaceholder } from '../furniture/CharacterPlaceholder'
+import { Character } from '../furniture/CharacterPlaceholder'
 
 export function Room() {
   return (
@@ -35,7 +35,7 @@ export function Room() {
       <PenHolder />
       <Phone />
 
-      <CharacterPlaceholder />
+      <Character />
     </group>
   )
 }

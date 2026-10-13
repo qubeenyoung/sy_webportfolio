@@ -20,21 +20,23 @@ import bpy
 
 # --- WINDOW.curtain in src/config/room.ts ------------------------------------------------------
 ROD_HEIGHT = 2.3
-PANEL_WIDTH = 0.4
-DROP = 1.75
-OFFSET_FROM_WALL = 0.08
-PANEL_OFFSETS = (-0.65, 0.65)
-SILL_HEIGHT = 0.85  # WINDOW.sillHeight; the sill sticks out 0.12 from the wall
-SILL_CLEARANCE = 0.12  # below the sill the curtain bows out this much so the sill stays covered
+PANEL_WIDTH = 0.42
+DROP = 1.66  # back panel: ends just above the bed
+FRONT_DROP = 1.24  # front panel: ends at the bookshelf top, next to the trophy (as in the reference)
+OFFSET_FROM_WALL = 0.09
+PANEL_OFFSETS = (-0.66, 0.66)
+# The window sill sticks out only 0.045 from the wall, so even the deepest fold valley
+# (OFFSET_FROM_WALL - FOLD_DEPTH_BOTTOM * max(FOLD_VARIATION) ~= 0.059) hangs clear of it while the
+# panel stays a straight vertical drop.
 
 # --- shape ---------------------------------------------------------------------------------------
-FOLDS = 3  # big soft folds per panel
-FOLD_DEPTH_TOP = 0.03  # half-depth of a fold at the rod (gathered)
-FOLD_DEPTH_BOTTOM = 0.065  # folds open up toward the hem
-FOLD_ROUNDNESS = 0.55  # < 1 widens crests and valleys into soft rounded tubes instead of a sine "corrugation"
-FLARE = 0.1  # extra width at the hem, added on the side away from the window
-HEM_DIP = 0.02  # the hem hangs slightly lower under each fold crest
-FOLD_VARIATION = (1.0, 0.8, 1.15)  # uneven fold depths so it doesn't look machine-made
+FOLDS = 4  # broad, shallow folds per panel
+FOLD_DEPTH_TOP = 0.02  # half-depth of a fold at the rod
+FOLD_DEPTH_BOTTOM = 0.028  # folds open up only slightly toward the hem
+FOLD_ROUNDNESS = 0.7  # < 1 widens crests and valleys into soft rounded tubes instead of a sine "corrugation"
+FLARE = 0.04  # extra width at the hem, added on the side away from the window
+HEM_DIP = 0.008  # the hem hangs slightly lower under each fold crest
+FOLD_VARIATION = (1.0, 0.85, 1.1, 0.9)  # uneven fold depths so it doesn't look machine-made
 THICKNESS = 0.012
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -55,7 +57,7 @@ def curtain_material():
     return mat
 
 
-def panel(name, center_x, outward, collection, cols=30, rows=16):
+def panel(name, center_x, outward, collection, drop=DROP, cols=30, rows=16):
     """One panel: a sheet with a few broad sine folds, slightly flared toward the hem."""
     bm = bmesh.new()
     grid = []
@@ -73,10 +75,8 @@ def panel(name, center_x, outward, collection, cols=30, rows=16):
             s = math.sin(u * FOLDS * 2 * math.pi)
             wave = math.copysign(abs(s) ** FOLD_ROUNDNESS, s)
             z = OFFSET_FROM_WALL + amp * wave
-            y_plain = ROD_HEIGHT - 0.02 - DROP * t
-            bow = min(max((SILL_HEIGHT + 0.35 - y_plain) / 0.3, 0.0), 1.0)
-            z += SILL_CLEARANCE * (3 * bow**2 - 2 * bow**3)  # smoothstep
-            y = ROD_HEIGHT - 0.02 - DROP * t - HEM_DIP * t**4 * max(wave, 0)
+
+            y = ROD_HEIGHT - 0.02 - drop * t - HEM_DIP * t**4 * max(wave, 0)
             row.append(bm.verts.new(to_blender(x0 + width * u, y, z)))
         grid.append(row)
     for r in range(rows):
@@ -105,7 +105,7 @@ def build(collection):
     # panel at negative x hangs on one side of the window, positive x on the other;
     # "outward" means away from the window opening
     return [
-        panel("curtain_a", PANEL_OFFSETS[0], -1, collection),
+        panel("curtain_a", PANEL_OFFSETS[0], -1, collection, FRONT_DROP),
         panel("curtain_b", PANEL_OFFSETS[1], 1, collection),
     ]
 

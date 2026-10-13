@@ -48,8 +48,9 @@ export default function App() {
   return (
     <div className="viewport">
       <div className="stage" style={{ background: PALETTE.wall }}>
-        <Canvas shadows gl={{ preserveDrawingBuffer: true }} resize={{ debounce: 0 }}>
-          <DebugContext.Provider value={{ edges }}>
+        {/* flat = no tone mapping, so palette colors render as sampled from the reference */}
+        <Canvas shadows flat gl={{ preserveDrawingBuffer: true }} resize={{ debounce: 0 }}>
+          <DebugContext.Provider value={{ edges, free }}>
             <CameraRig type={cameraType} free={free} />
             <Lights />
             <Suspense fallback={null}>

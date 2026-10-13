@@ -3,3 +3,5 @@ dist
 *.local
 # Original reference images (incl. other artists' work) stay local; the app uses copies in public/
 ref_pics
+# Blender working files (MCP sessions)
+tools/blender/work/

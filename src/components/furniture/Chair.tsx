@@ -1,38 +1,37 @@
 import { CHAIR } from '../../config/room'
-import { Block } from '../scene/Block'
+import { Block, Cylinder } from '../scene/Block'
 import { Placed } from '../scene/Placed'
 
 // Local space: the seated person faces +z; the backrest is at -z.
+// The reference's chair: red padded seat and back on a black tubular frame.
 export function Chair() {
   const { seatHeight: sh, seatSize: s, backHeight: bh } = CHAIR
-  const leg = 0.025
-  const seat = 0.06
+  const pad = 0.07
+  const tube = 0.012
+  const backTilt = -0.12
+  const legX = s / 2 - 0.03
 
   return (
     <Placed name="chair" placement={CHAIR.placement}>
-      <Block role="fabricAccent" size={[s, seat, s]} position={[0, sh - seat / 2, 0]} radius={0.02} />
-      <Block
-        role="fabricAccent"
-        size={[s, bh, 0.05]}
-        position={[0, sh + 0.08 + bh / 2, -s / 2 + 0.02]}
-        rotation={[-0.1, 0, 0]}
-        radius={0.02}
-      />
-      {[
-        [-1, -1],
-        [-1, 1],
-        [1, -1],
-        [1, 1],
-      ].map(([sx, sz]) => (
-        <Block
-          key={`${sx}${sz}`}
-          role="metal"
-          size={[leg, sh - seat, leg]}
-          position={[sx * (s / 2 - leg), (sh - seat) / 2, sz * (s / 2 - leg)]}
-        />
-      ))}
+      <Block role="chair" size={[s, pad, s]} position={[0, sh - pad / 2, 0.01]} radius={0.03} />
+      <Block role="chair" size={[s - 0.02, bh, 0.06]} position={[0, sh + 0.06 + bh / 2, -s / 2 + 0.01]} rotation={[backTilt, 0, 0]} radius={0.03} />
+      {/* legs, slightly splayed */}
+      {[-1, 1].map((sx) =>
+        [-1, 1].map((sz) => (
+          <Cylinder
+            key={`${sx}${sz}`}
+            role="metal"
+            radiusTop={tube}
+            height={sh - pad + 0.02}
+            position={[sx * legX, (sh - pad) / 2, sz * (s / 2 - 0.04)]}
+            rotation={[sz * 0.06, 0, -sx * 0.06]}
+            segments={10}
+          />
+        )),
+      )}
+      {/* back uprights */}
       {[-1, 1].map((sx) => (
-        <Block key={sx} role="metal" size={[leg, bh + 0.1, leg]} position={[sx * (s / 2 - leg), sh + bh / 2, -s / 2 + 0.01]} rotation={[-0.1, 0, 0]} />
+        <Cylinder key={sx} role="metal" radiusTop={tube} height={bh + 0.12} position={[sx * legX, sh + bh / 2, -s / 2 - 0.005]} rotation={[backTilt, 0, 0]} segments={10} />
       ))}
     </Placed>
   )

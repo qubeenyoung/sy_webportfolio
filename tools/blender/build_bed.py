@@ -22,21 +22,21 @@ import bpy
 from mathutils import Vector
 
 # --- parameters (keep in sync with BED in src/config/room.ts) ---------------------------------
-WIDTH = 1.35  # mattress width
-LENGTH = 2.1
+WIDTH = 1.47  # mattress width
+LENGTH = 2.37
 MATTRESS_TOP = 0.5
-HEADBOARD_HEIGHT = 0.95
+HEADBOARD_HEIGHT = 0.64
 FRAME_TOP = MATTRESS_TOP - 0.2
 FRAME_WIDTH = WIDTH + 0.06
 
-PILLOW_SIZE = (0.62, 0.46)  # width, depth
-PILLOW_THICKNESS = 0.21
-PILLOW_TILT = 0.75  # radians, leaning against the headboard
+PILLOW_SIZE = (0.68, 0.44)  # width, depth
+PILLOW_THICKNESS = 0.17
+PILLOW_TILT = 0.45  # radians, leaning against the headboard
 
-DUVET_OVERHANG = 0.22  # how far the duvet hangs past the mattress sides
+DUVET_OVERHANG = 0.26  # how far the duvet hangs past the mattress sides
 DUVET_FOOT_OVERHANG = 0.05  # small: the bookshelf stands right at the foot of the bed
-DUVET_TOP_GAP = 0.5  # distance from the headboard to the duvet's top edge
-DUVET_THICKNESS = 0.05
+DUVET_TOP_GAP = 0.7  # distance from the headboard to the duvet's top edge
+DUVET_THICKNESS = 0.075  # the reference's duvet is thick and puffy
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT = os.path.join(ROOT, "public", "models", "bed.glb")
@@ -180,14 +180,24 @@ def pillow_mesh(name, width, depth, thickness, res=28):
     return obj
 
 
+# As in the reference: two plain pillows propped against the headboard, and two big striped
+# pillows lying in front of them. (name, x, extra distance from the headboard, width, depth, thickness, tilt)
+PILLOWS = [
+    ("pillow_back_left", -0.36, 0.0, 0.66, 0.42, 0.17, 0.85),
+    ("pillow_back_right", 0.36, 0.0, 0.66, 0.42, 0.17, 0.85),
+    ("pillow_left", -0.38, 0.24, 0.66, 0.46, PILLOW_THICKNESS, PILLOW_TILT),
+    ("pillow_right", 0.4, 0.3, 0.62, 0.44, PILLOW_THICKNESS, PILLOW_TILT),
+]
+
+
 def build_pillows():
     pillows = []
-    w, d = PILLOW_SIZE
-    for name, x in (("pillow_left", -0.33), ("pillow_right", 0.33)):
-        p = pillow_mesh(name, w, d, PILLOW_THICKNESS)
-        # resting on the mattress, back edge propped against the headboard
-        p.location = (x, LENGTH / 2 - 0.06 - d / 2 * math.cos(PILLOW_TILT), MATTRESS_TOP + 0.03 + d / 2 * math.sin(PILLOW_TILT) * 0.8)
-        p.rotation_euler = (PILLOW_TILT, 0, 0)
+    for name, x, forward, w, d, thickness, tilt in PILLOWS:
+        p = pillow_mesh(name, w, d, thickness)
+        # resting on the mattress, back edge propped against the headboard (or the pillow behind)
+        back = LENGTH / 2 - 0.06 - forward
+        p.location = (x, back - d / 2 * math.cos(tilt), MATTRESS_TOP + 0.03 + forward * 0.25 + d / 2 * math.sin(tilt) * 0.8)
+        p.rotation_euler = (tilt, 0, 0)
         pillows.append(p)
     return pillows
 
