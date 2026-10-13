@@ -1,0 +1,5 @@
+node_modules
+dist
+*.local
+# Original reference images (incl. other artists' work) stay local; the app uses copies in public/
+ref_pics
