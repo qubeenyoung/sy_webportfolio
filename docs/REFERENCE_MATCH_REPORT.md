@@ -173,7 +173,14 @@
 
 ## 8. 배포 결과
 
-기존 GitHub Actions 워크플로로 `main`에 push해서 https://qubeenyoung.github.io/sy_webportfolio/ 에 배포해요. 배포 결과는 커밋 후 아래에 적어요.
+기존 GitHub Actions 워크플로(설정 변경 없음)로 배포했어요.
+
+- 배포 주소: https://qubeenyoung.github.io/sy_webportfolio/
+- 커밋: `00777b8`(구현), `6cdba9b`(보고서)
+- GitHub Actions 실행 `38448149528`: 성공
+- 배포 후 확인
+  - 페이지, `bed.glb`, `curtain.glb`, `character.png`, `festival-poster-clean.jpg`가 모두 HTTP 200으로 응답했어요.
+  - 실제 사이트를 헤드리스 Chrome으로 열어 최종 화면이 그대로 렌더링되는 것을 확인했어요.
 
 ## 9. 이후 개선이 필요한 사항
 
